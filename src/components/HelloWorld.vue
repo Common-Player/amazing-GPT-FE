@@ -1,40 +1,70 @@
 <template>
   <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
+    <!-- ... 省略其他代码 ... -->
+
+    <!-- 添加一个输入框用于输入用户请求 -->
+    <input type="text" v-model="userInput" placeholder="输入您的请求">
+
+    <!-- 添加一个按钮来触发请求 -->
+    <button @click="sendRequest">发送文心一言请求</button>
+    <button @click="sendRequest2">发送GPT请求</button>
+
+    <!-- 可以在这里显示响应结果 -->
+    <div v-if="response">
+      <h3>百度响应结果:</h3>
+      <pre>{{ response.result }}</pre>
+    </div>
+    <div v-if="response2">
+      <h3>GPT响应结果:</h3>
+      <pre>{{ response2.choices[0].message.content }}</pre>
+    </div>
   </div>
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
-  name: 'HelloWorld',
+  name: "HelloWorld",
   props: {
-    msg: String
-  }
-}
+    msg: String,
+  },
+  data() {
+    return {
+      userInput: "", // 用户输入的数据
+      response: null, // 用于存储响应数据
+      response2: null, // 用于存储响应数据
+    };
+  },
+  methods: {
+    async sendRequest() {
+      try {
+        const res = await axios.post("http://localhost:3000/api/baidu-query", {
+          userInput: this.userInput, // 使用绑定的用户输入
+        }, {
+          timeout: 30000 // 设置请求超时时间为 30 秒
+        });
+        this.response = res.data;
+      } catch (error) {
+        console.error("请求错误:", error);
+        this.response = error.message; // 显示具体的错误信息
+      }
+    },
+    async sendRequest2() {
+      try {
+        const res = await axios.post("http://localhost:3000/api/gpt-query", {
+          userInput: this.userInput, // 使用绑定的用户输入
+        }, {
+          timeout: 30000 // 设置请求超时时间为 30 秒
+        });
+        this.response2 = res.data;
+      } catch (error) {
+        console.error("请求错误:", error);
+        this.response2 = error.message; // 显示具体的错误信息
+      }
+    },
+  },
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
@@ -42,15 +72,21 @@ export default {
 h3 {
   margin: 40px 0 0;
 }
-ul {
-  list-style-type: none;
-  padding: 0;
+input[type="text"] {
+  margin: 20px 0;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
-li {
-  display: inline-block;
-  margin: 0 10px;
+button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  background-color: #42b983;
+  color: white;
+  cursor: pointer;
 }
-a {
-  color: #42b983;
+button:hover {
+  background-color: #333;
 }
 </style>
