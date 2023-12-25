@@ -35,42 +35,8 @@ export default {
     };
   },
   methods: {
-    async sendRequest() {
-      try {
-        const res = await axios.post(
-          "http://localhost:3000/api/baidu-query",
-          {
-            userInput: this.userInput, // 使用绑定的用户输入
-          },
-          {
-            timeout: 30000, // 设置请求超时时间为 30 秒
-          }
-        );
-        this.response = res.data;
-      } catch (error) {
-        console.error("请求错误:", error);
-        this.response = error.message; // 显示具体的错误信息
-      }
-    },
-    async sendRequest2() {
-      try {
-        const res = await axios.post(
-          "http://localhost:3000/api/gpt-query",
-          {
-            userInput: this.userInput, // 使用绑定的用户输入
-          },
-          {
-            timeout: 30000, // 设置请求超时时间为 30 秒
-          }
-        );
-        this.response2 = res.data;
-      } catch (error) {
-        console.error("请求错误:", error);
-        this.response2 = error.message; // 显示具体的错误信息
-      }
-    },
     async sendGPTRequest() {
-      const OPENAI_API_KEY = "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"; // 需要将密钥存储在前端，但这是不安全的
+      const OPENAI_API_KEY = process.env.VUE_APP_OPENAI_API_KEY;
       try {
         const response = await axios.post(
           "https://api.openai.com/v1/chat/completions",
@@ -94,7 +60,7 @@ export default {
       }
     },
     async sendBaiduRequest() {
-      const BAIDU_ACCESS_TOKEN = "24.b06e7f8b4f98a2330fbaf8c43e704e7a.2592000.1705762138.282335-45463185"; // 同样需要在前端存储，存在安全风险
+      const BAIDU_ACCESS_TOKEN = process.env.VUE_APP_BAIDU_ACCESS_TOKEN;
       try {
         const response = await axios.post(
           "https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/completions_pro?access_token=" +
